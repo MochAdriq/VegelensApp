@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,42 +8,66 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
-// import StackNavigation from '../Navigation/Navigator';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import LinearGradient from 'react-native-linear-gradient';
+import axios from 'axios';
 import ImageCard from '../component/imageCard';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const processImage = imageUri => {
+    setLoading(true);
+    setSelectedImage(imageUri);
+    const imageBase64 = imageUri.split('data:image/jpeg;base64,')[1];
+
+    axios({
+      method: 'POST',
+      url: 'https://classify.roboflow.com/vegetableyolov8classification/1',
+      params: {
+        api_key: 'RJDr6YuHOWYP1wdFnKbN',
+      },
+      data: imageBase64,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    })
+      .then(response => {
+        setPrediction(response.data);
+        setModalVisible(true);
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
+      })
+      .finally(() => setLoading(false));
+  };
 
   const openCamera = () => {
-    const option = {
-      mediaType: 'photo',
-      quality: 1,
-    };
-
-    launchCamera(option, res => {
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('Error');
-      }
-    });
+    launchCamera(
+      {mediaType: 'photo', quality: 1, includeBase64: true},
+      response => {
+        if (!response.didCancel && !response.error && response.assets) {
+          processImage(response.assets[0].uri);
+        }
+      },
+    );
   };
-  const openGallery = () => {
-    const option = {
-      mediaType: 'photo',
-      quality: 1,
-    };
 
-    launchImageLibrary(option, res => {
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('Error');
-      }
-    });
+  const openGallery = () => {
+    launchImageLibrary(
+      {mediaType: 'photo', quality: 1, includeBase64: true},
+      response => {
+        if (!response.didCancel && !response.error && response.assets) {
+          processImage(response.assets[0].uri);
+        }
+      },
+    );
   };
 
   return (
@@ -54,7 +78,6 @@ const HomeScreen = () => {
           onPress={() => navigation.navigate('HamburgerScreen')}>
           <Image source={require('../icon/menu-bar.png')} style={styles.icon} />
         </TouchableOpacity>
-
         <Text style={styles.title}>VegeLens</Text>
       </View>
 
@@ -92,40 +115,57 @@ const HomeScreen = () => {
         <ImageCard
           imageSource={require('../img/tomat.jpg')}
           title="Tomat"
-          targetScreen="InformationScreen" // Nama screen tujuan
+          targetScreen="InformationScreen"
           params={{
             imageSource: require('../img/tomat.jpg'),
             title: 'Tomat',
             description:
               'Tomat (*Solanum lycopersicum*) adalah buah dari keluarga *Solanaceae* yang kaya akan nutrisi, seperti vitamin C, vitamin A, dan likopen, yang bermanfaat untuk kesehatan. Buah ini sering berwarna merah, kuning, atau hijau, tergantung varietasnya, dan digunakan dalam berbagai masakan, baik segar maupun olahan. Tomat tumbuh subur di daerah beriklim hangat dengan paparan sinar matahari yang cukup dan tanah yang subur.',
-          }} // Parameter untuk screen
+          }}
         />
       </ScrollView>
+
+      {/* Modal for Prediction Result */}
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {loading ? (
+              <ActivityIndicator size="large" color="#4CAF50" />
+            ) : (
+              <>
+                {selectedImage && (
+                  <Image
+                    source={{uri: selectedImage}}
+                    style={styles.resultImage}
+                  />
+                )}
+                <Text style={styles.predictionText}>
+                  {prediction ? prediction.label : 'No prediction'}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#4CAF50',
-  },
+  container: {flex: 1, backgroundColor: '#4CAF50'},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  icon: {
-    width: 30,
-    height: 30,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
+  icon: {width: 30, height: 30},
+  title: {color: '#fff', fontSize: 24, fontWeight: 'bold', marginLeft: 10},
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -135,16 +175,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: 10,
   },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#555',
-  },
-  searchIcon: {
-    width: 20,
-    height: 20,
-    marginLeft: 5,
-  },
+  searchInput: {flex: 1, fontSize: 16, color: '#555'},
+  searchIcon: {width: 20, height: 20, marginLeft: 5},
   buttonSection: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -159,15 +191,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonImage: {
-    width: 40,
-    height: 40,
+  buttonImage: {width: 40, height: 40},
+  imageSection: {marginTop: 20, paddingHorizontal: 16, alignItems: 'center'},
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  imageSection: {
-    marginTop: 20,
-    paddingHorizontal: 16,
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
     alignItems: 'center',
   },
+  resultImage: {width: 200, height: 200, marginBottom: 10},
+  predictionText: {fontSize: 18, fontWeight: 'bold'},
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {color: 'white', fontWeight: 'bold'},
 });
 
 export default HomeScreen;
