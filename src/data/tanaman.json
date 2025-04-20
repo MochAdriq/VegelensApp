@@ -1,0 +1,152 @@
+[
+  {
+    "identifier": "tomato",
+    "nama": "Tomat (Tomato)",
+    "nama_ilmiah": "Solanum lycopersicum",
+    "asal": "Amerika Selatan (South America)",
+    "musim_tanam": "Musim hangat (Warm season)",
+    "suhu_ideal": "21–27°C",
+    "jenis_tanah": "Tanah lempung berdrainase baik (Well-drained loamy soil)",
+    "deskripsi": "Tomat adalah buah yang sering digunakan sebagai sayuran dalam masakan. Kaya akan vitamin A dan C, serta mudah tumbuh di daerah tropis dan sedang."
+  },
+  {
+    "identifier": "Radish",
+    "nama": "Lobak (Radish)",
+    "nama_ilmiah": "Raphanus sativus",
+    "asal": "Asia Tenggara (Southeast Asia)",
+    "musim_tanam": "Musim sejuk (Cool season)",
+    "suhu_ideal": "10–20°C",
+    "jenis_tanah": "Tanah gembur dan berdrainase baik (Loose, well-drained soil)",
+    "deskripsi": "Lobak adalah sayuran akar yang tumbuh cepat dan sering dikonsumsi mentah dalam salad. Memiliki rasa yang agak pedas dan kaya antioksidan."
+  },
+  {
+    "identifier": "Pumpkin",
+    "nama": "Labu (Pumpkin)",
+    "nama_ilmiah": "Cucurbita pepo",
+    "asal": "Amerika Utara (North America)",
+    "musim_tanam": "Musim hangat (Warm season)",
+    "suhu_ideal": "20–30°C",
+    "jenis_tanah": "Tanah subur dan berdrainase baik (Well-drained, fertile soil)",
+    "deskripsi": "Labu adalah buah besar berwarna oranye yang biasa digunakan dalam masakan atau dekorasi. Kaya akan vitamin dan dapat digunakan dalam sup, pie, dan lainnya."
+  },
+  {
+    "identifier": "Potato",
+    "nama": "Kentang (Potato)",
+    "nama_ilmiah": "Solanum tuberosum",
+    "asal": "Amerika Selatan (South America)",
+    "musim_tanam": "Musim sejuk (Cool season)",
+    "suhu_ideal": "15–20°C",
+    "jenis_tanah": "Tanah berpasir dan berdrainase baik (Well-drained sandy loam)",
+    "deskripsi": "Kentang adalah tanaman umbi yang menjadi makanan pokok di berbagai negara. Mengandung karbohidrat dan serat tinggi."
+  },
+  {
+    "identifier": "Papaya",
+    "nama": "Pepaya (Papaya)",
+    "nama_ilmiah": "Carica papaya",
+    "asal": "Amerika Tengah (Central America)",
+    "musim_tanam": "Musim hangat (Warm season)",
+    "suhu_ideal": "25–35°C",
+    "jenis_tanah": "Tanah lempung subur dan berdrainase baik (Well-drained, rich loam)",
+    "deskripsi": "Pepaya adalah buah tropis manis yang dikenal karena manfaat pencernaannya. Tumbuh cepat dan berbuah sepanjang tahun di daerah hangat."
+  },
+  {
+    "identifier": "Cucumber",
+    "nama": "Mentimun (Cucumber)",
+    "nama_ilmiah": "Cucumis sativus",
+    "asal": "India",
+    "musim_tanam": "Musim hangat (Warm season)",
+    "suhu_ideal": "24–30°C",
+    "jenis_tanah": "Tanah berpasir berdrainase baik (Well-drained sandy loam)",
+    "deskripsi": "Mentimun adalah tanaman merambat yang sering dimakan segar atau dibuat acar. Kandungan airnya tinggi dan menyegarkan."
+  },
+  {
+    "identifier": "Cauliflower",
+    "nama": "Kembang Kol (Cauliflower)",
+    "nama_ilmiah": "Brassica oleracea var. botrytis",
+    "asal": "Mediterania (Mediterranean region)",
+    "musim_tanam": "Musim sejuk (Cool season)",
+    "suhu_ideal": "18–21°C",
+    "jenis_tanah": "Tanah subur dan berdrainase baik (Fertile, well-drained soil)",
+    "deskripsi": "Kembang kol adalah sayuran dari keluarga kubis yang dikenal karena kepala putihnya yang dapat dimakan. Sering digunakan dalam sup dan tumisan."
+  },
+  {
+    "identifier": "Carrot",
+    "nama": "Wortel (Carrot)",
+    "nama_ilmiah": "Daucus carota",
+    "asal": "Iran dan Afghanistan",
+    "musim_tanam": "Musim sejuk (Cool season)",
+    "suhu_ideal": "15–20°C",
+    "jenis_tanah": "Tanah gembur dan berpasir (Loose, sandy loam)",
+    "deskripsi": "Wortel adalah sayuran akar yang dikenal dengan warna oranye cerah dan rasa manis. Kaya beta-karoten dan antioksidan."
+  },
+  {
+    "identifier": "Capsicum",
+    "nama": "Paprika (Capsicum)",
+    "nama_ilmiah": "Capsicum annuum",
+    "asal": "Amerika Tengah (Central America)",
+    "musim_tanam": "Musim panas (Summer)",
+    "suhu_ideal": "20–30°C",
+    "jenis_tanah": "Tanah berpasir dan subur (Well-drained sandy loam)",
+    "deskripsi": "Paprika adalah sayuran dengan rasa manis atau sedikit pedas. Tersedia dalam berbagai warna dan kaya akan vitamin C."
+  },
+  {
+    "identifier": "Cabbage",
+    "nama": "Kubis (Cabbage)",
+    "nama_ilmiah": "Brassica oleracea var. capitata",
+    "asal": "Eropa (Europe)",
+    "musim_tanam": "Musim sejuk (Cool season)",
+    "suhu_ideal": "15–21°C",
+    "jenis_tanah": "Tanah lempung subur dan lembap (Moist, fertile loamy soil)",
+    "deskripsi": "Kubis adalah tanaman daun yang banyak digunakan dalam masakan tradisional. Mengandung vitamin K dan serat tinggi."
+  },
+  {
+    "identifier": "Broccoli",
+    "nama": "Brokoli (Broccoli)",
+    "nama_ilmiah": "Brassica oleracea var. italica",
+    "asal": "Italia (Italy)",
+    "musim_tanam": "Musim sejuk (Cool season)",
+    "suhu_ideal": "15–20°C",
+    "jenis_tanah": "Tanah subur dan berdrainase baik (Fertile, well-drained soil)",
+    "deskripsi": "Brokoli adalah sayuran bergizi tinggi yang populer karena kepala bunganya yang dapat dimakan. Kaya vitamin C dan K."
+  },
+  {
+    "identifier": "Brinjal",
+    "nama": "Terong (Brinjal)",
+    "nama_ilmiah": "Solanum melongena",
+    "asal": "India",
+    "musim_tanam": "Musim hangat (Warm season)",
+    "suhu_ideal": "21–30°C",
+    "jenis_tanah": "Tanah lempung berdrainase baik (Loamy, well-drained soil)",
+    "deskripsi": "Terong adalah sayuran serbaguna yang digunakan dalam berbagai masakan. Mudah tumbuh dan kaya antioksidan."
+  },
+  {
+    "identifier": "Bottle_Gourd",
+    "nama": "Labu Botol (Bottle Gourd)",
+    "nama_ilmiah": "Lagenaria siceraria",
+    "asal": "Afrika dan Asia (Africa and Asia)",
+    "musim_tanam": "Musim panas (Summer)",
+    "suhu_ideal": "25–35°C",
+    "jenis_tanah": "Tanah lempung berpasir dan berdrainase baik (Well-drained sandy loam)",
+    "deskripsi": "Labu botol adalah tanaman merambat cepat dengan buah berbentuk botol. Sering digunakan dalam berbagai masakan Asia."
+  },
+  {
+    "identifier": "Bitter_Gourd",
+    "nama": "Pare (Bitter Gourd)",
+    "nama_ilmiah": "Momordica charantia",
+    "asal": "Asia dan Afrika (Asia and Africa)",
+    "musim_tanam": "Musim panas ke awal musim hujan (Summer to early rainy season)",
+    "suhu_ideal": "24–30°C",
+    "jenis_tanah": "Tanah subur dan berdrainase baik (Fertile, well-drained soil)",
+    "deskripsi": "Pare adalah tanaman merambat tropis dengan buah pahit yang khas. Digunakan dalam masakan dan pengobatan tradisional Asia."
+  },
+  {
+    "identifier": "Bean",
+    "nama": "Kacang Panjang (Bean)",
+    "nama_ilmiah": "Phaseolus vulgaris",
+    "asal": "Amerika Tengah dan Selatan (Central and South America)",
+    "musim_tanam": "Awal musim hujan (Early rainy season)",
+    "suhu_ideal": "18–24°C",
+    "jenis_tanah": "Tanah lempung berdrainase baik (Well-drained loamy soil)",
+    "deskripsi": "Kacang panjang adalah tanaman legum yang kaya protein dan serat. Banyak dibudidayakan di daerah tropis dan subtropis."
+  }
+]

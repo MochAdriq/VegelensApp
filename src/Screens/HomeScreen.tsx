@@ -1,5 +1,7 @@
+// eslint-disable
+
 import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -21,58 +23,128 @@ const HomeScreen = () => {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const processImage = imageUri => {
+  const vegetableData = require('../data/tanaman.json'); // Mengambil data tanaman
+
+  const imageMap = {
+    tomato: require('../img/tomat.jpg'),
+    radish: require('../img/lobak.jpg'),
+    pumpkin: require('../img/labu.jpg'),
+    potato: require('../img/kentang.jpg'),
+    papaya: require('../img/pepaya.jpg'),
+    cucumber: require('../img/mentimun.jpg'),
+    cauliflower: require('../img/kembang-kol.jpg'),
+    carrot: require('../img/wortel.jpg'),
+    capsicum: require('../img/paprika.jpg'),
+    cabbage: require('../img/kubis.jpg'),
+    broccoli: require('../img/brokoli.jpg'),
+    brinjal: require('../img/terong.jpg'),
+    bottle_gourd: require('../img/labu-botol.jpg'),
+    bitter_gourd: require('../img/pare.jpg'),
+    bean: require('../img/kacang-panjang.jpg'),
+  };
+
+  useEffect(() => {
+    setModalVisible(false);
+    setSelectedImage(null);
+    setPrediction(null);
+
+    if (searchQuery === '') {
+      // Jika search kosong, tampilkan semua data
+      setFilteredData(vegetableData);
+    } else {
+      // Filter berdasarkan nama tanaman (case-insensitive)
+      const filtered = vegetableData.filter(veg =>
+        veg.nama.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setFilteredData(filtered);
+    }
+  }, [navigation, searchQuery]);
+
+  const handleSeeMore = () => {
+    navigation.navigate('InformationScreen', {prediction});
+  };
+
+  const processImage = async imageAsset => {
+    if (!imageAsset.uri) {
+      console.error('URI gambar tidak ditemukan.');
+      return;
+    }
+
+    setSelectedImage(imageAsset.uri);
     setLoading(true);
-    setSelectedImage(imageUri);
-    const imageBase64 = imageUri.split('data:image/jpeg;base64,')[1];
+    setModalVisible(true); // Tampilkan modal dulu
 
-    axios({
-      method: 'POST',
-      url: 'https://classify.roboflow.com/vegetableyolov8classification/1',
-      params: {
-        api_key: 'RJDr6YuHOWYP1wdFnKbN',
-      },
-      data: imageBase64,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    })
-      .then(response => {
-        setPrediction(response.data);
-        setModalVisible(true);
-      })
-      .catch(error => {
-        console.error('Error:', error.message);
-      })
-      .finally(() => setLoading(false));
+    try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: imageAsset.uri,
+        name: 'image.jpg',
+        type: imageAsset.type || 'image/jpeg',
+      });
+
+      const response = await axios.post(
+        'https://classify.roboflow.com/vegetableyolov8classification-d883l/1',
+        formData,
+        {
+          params: {
+            api_key: 'RJDr6YuHOWYP1wdFnKbN',
+          },
+          headers: {'Content-Type': 'multipart/form-data'},
+        },
+      );
+
+      console.log('Response dari Roboflow:', response.data);
+
+      if (response.data && response.data.predictions) {
+        const predictionsObj = response.data.predictions;
+        let highestConfidence = 0;
+        let bestPrediction = 'Tidak ada prediksi yang ditemukan';
+
+        for (const key in predictionsObj) {
+          if (predictionsObj[key].confidence > highestConfidence) {
+            highestConfidence = predictionsObj[key].confidence;
+            bestPrediction = key;
+          }
+        }
+
+        setPrediction(bestPrediction);
+      } else {
+        setPrediction('Tidak ada prediksi yang ditemukan');
+      }
+    } catch (error) {
+      console.error('Error:', error.response?.data || error.message);
+      setPrediction('Terjadi kesalahan saat memproses gambar');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const openCamera = () => {
-    launchCamera(
-      {mediaType: 'photo', quality: 1, includeBase64: true},
-      response => {
-        if (!response.didCancel && !response.error && response.assets) {
-          processImage(response.assets[0].uri);
-        }
-      },
-    );
+    launchCamera({mediaType: 'photo', quality: 1}, response => {
+      if (!response.didCancel && !response.error && response.assets) {
+        processImage(response.assets[0]);
+      }
+    });
   };
 
   const openGallery = () => {
-    launchImageLibrary(
-      {mediaType: 'photo', quality: 1, includeBase64: true},
-      response => {
-        if (!response.didCancel && !response.error && response.assets) {
-          processImage(response.assets[0].uri);
-        }
-      },
-    );
+    launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
+      if (!response.didCancel && !response.error && response.assets) {
+        processImage(response.assets[0]);
+      }
+    });
+  };
+
+  const getImageByIdentifier = identifier => {
+    const key = identifier.toLowerCase();
+    return imageMap[key] || require('../img/dummy-image.jpg');
   };
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.navigate('HamburgerScreen')}>
@@ -81,12 +153,13 @@ const HomeScreen = () => {
         <Text style={styles.title}>VegeLens</Text>
       </View>
 
-      {/* Search Bar */}
       <View style={styles.searchBar}>
         <TextInput
           placeholder="Search"
           placeholderTextColor="#aaa"
           style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
         <Image
           source={require('../icon/search.png')}
@@ -94,7 +167,6 @@ const HomeScreen = () => {
         />
       </View>
 
-      {/* Button Section */}
       <View style={styles.buttonSection}>
         <TouchableOpacity style={styles.iconButton} onPress={openGallery}>
           <Image
@@ -110,22 +182,23 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Image Section */}
       <ScrollView contentContainerStyle={styles.imageSection}>
-        <ImageCard
-          imageSource={require('../img/tomat.jpg')}
-          title="Tomat"
-          targetScreen="InformationScreen"
-          params={{
-            imageSource: require('../img/tomat.jpg'),
-            title: 'Tomat',
-            description:
-              'Tomat (*Solanum lycopersicum*) adalah buah dari keluarga *Solanaceae* yang kaya akan nutrisi, seperti vitamin C, vitamin A, dan likopen, yang bermanfaat untuk kesehatan. Buah ini sering berwarna merah, kuning, atau hijau, tergantung varietasnya, dan digunakan dalam berbagai masakan, baik segar maupun olahan. Tomat tumbuh subur di daerah beriklim hangat dengan paparan sinar matahari yang cukup dan tanah yang subur.',
-          }}
-        />
+        {filteredData.map(vegetable => (
+          <ImageCard
+            key={vegetable.identifier}
+            imageSource={getImageByIdentifier(vegetable.identifier)}
+            title={vegetable.nama}
+            targetScreen="InformationScreen"
+            params={{
+              imageSource: getImageByIdentifier(vegetable.identifier),
+              title: vegetable.nama,
+              description: vegetable.deskripsi,
+              prediction: vegetable.identifier,
+            }}
+          />
+        ))}
       </ScrollView>
 
-      {/* Modal for Prediction Result */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -139,9 +212,16 @@ const HomeScreen = () => {
                     style={styles.resultImage}
                   />
                 )}
-                <Text style={styles.predictionText}>
-                  {prediction ? prediction.label : 'No prediction'}
+                <Text
+                  style={{fontSize: 16, fontWeight: 'bold', marginBottom: 5}}>
+                  Hasil Prediksi:
                 </Text>
+                <Text style={styles.predictionText}>{prediction}</Text>
+                <TouchableOpacity
+                  onPress={handleSeeMore}
+                  style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>Lihat Selengkapnya</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
                   style={styles.closeButton}>
@@ -152,6 +232,12 @@ const HomeScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -182,6 +268,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginTop: 20,
     marginHorizontal: 16,
+    padding: 16,
   },
   iconButton: {
     width: 70,
@@ -192,7 +279,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonImage: {width: 40, height: 40},
-  imageSection: {marginTop: 20, paddingHorizontal: 16, alignItems: 'center'},
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -200,20 +286,51 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    padding: 25,
+    borderRadius: 20,
     alignItems: 'center',
+    width: '85%',
+    elevation: 5,
   },
+
   resultImage: {width: 200, height: 200, marginBottom: 10},
-  predictionText: {fontSize: 18, fontWeight: 'bold'},
+  predictionText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#4CAF50',
+    marginTop: 15,
+    textAlign: 'center',
+  },
+
   closeButton: {
     marginTop: 10,
     backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: '80%',
+    alignItems: 'center',
   },
-  closeButtonText: {color: 'white', fontWeight: 'bold'},
+
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  imageSection: {width: 'auto', padding: 16},
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    zIndex: 10,
+  },
 });
 
 export default HomeScreen;

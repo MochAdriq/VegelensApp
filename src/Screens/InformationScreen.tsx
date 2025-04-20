@@ -1,88 +1,116 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
-const InformationScreen = () => {
-  const route = useRoute();
-  const {imageSource, title, description} = route.params || {}; // Ambil parameter dari navigasi
-  const navigation = useNavigation();
+const InformationScreen = ({route, navigation}) => {
+  let {prediction, title, description, imageSource} = route.params || {};
+  const vegetableData = require('../data/tanaman.json'); // Mengambil data dari file tanaman.json
+
+  console.log('Prediction yang diterima:', prediction);
+
+  let selectedVegetable = null;
+  const cleanPrediction =
+    typeof prediction === 'string' ? prediction.split(' ')[0] : '';
+
+  if (cleanPrediction) {
+    selectedVegetable = vegetableData.find(
+      veg => veg.identifier.toLowerCase() === cleanPrediction.toLowerCase(),
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <TouchableOpacity
-          style={styles.backButton} // Posisi absolute
-          onPress={() => navigation.goBack()}>
-          <Image
-            source={require('../icon/back-arrow.png')} // Ikon panah kembali
-            style={styles.backIcon}
-          />
-        </TouchableOpacity>
+    <ScrollView style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <Image
-          source={imageSource} // Gambar diambil dari parameter
-          style={styles.image}
+          source={require('../icon/back-arrow.png')}
+          style={styles.backIcon}
         />
+      </TouchableOpacity>
+      <Text style={styles.title}>
+        {selectedVegetable?.nama || title || 'Data Tidak Ditemukan'}
+      </Text>
+
+      <Image
+        source={imageSource || require('../img/dummy-image.jpg')}
+        style={styles.image}
+      />
+
+      <Text style={styles.description}>
+        {selectedVegetable?.deskripsi ||
+          description ||
+          'Tidak ada informasi lebih lanjut.'}
+      </Text>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Nama Ilmiah:</Text>
+        <Text style={styles.value}>
+          {selectedVegetable?.nama_ilmiah || '-'}
+        </Text>
       </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Asal:</Text>
+        <Text style={styles.value}>{selectedVegetable?.asal || '-'}</Text>
       </View>
-    </View>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Suhu Ideal:</Text>
+        <Text style={styles.value}>{selectedVegetable?.suhu_ideal || '-'}</Text>
+      </View>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Musim Tanam:</Text>
+        <Text style={styles.value}>
+          {selectedVegetable?.musim_tanam || '-'}
+        </Text>
+      </View>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Jenis Tanah:</Text>
+        <Text style={styles.value}>
+          {selectedVegetable?.jenis_tanah || '-'}
+        </Text>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  backButton: {
-    position: 'absolute',
-    top: 16, // Sesuaikan jarak dari atas
-    left: 16, // Sesuaikan jarak dari kiri
-    zIndex: 1, // Pastikan tombol back muncul di atas gambar
-  },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 0,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  imageContainer: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container: {flex: 1, backgroundColor: '#fff', padding: 16},
+  title: {fontSize: 24, fontWeight: 'bold', color: '#4CAF50', marginBottom: 10},
   image: {
     width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    height: 250,
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: '#e0e0e0',
   },
-  textContainer: {
-    flex: 1,
-    backgroundColor: '#32CD32',
+  description: {fontSize: 16, color: '#333', marginBottom: 20},
+  infoBox: {
+    backgroundColor: '#f7f7f7',
     padding: 16,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    elevation: 2,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
+  label: {fontSize: 16, fontWeight: '600', color: '#4CAF50'},
+  value: {fontSize: 16, color: '#333', marginTop: 4},
+  backButton: {
+    padding: 10,
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
+    marginBottom: 20,
   },
-  description: {
-    fontSize: 16,
-    color: '#ffffff',
-  },
+  backButtonText: {color: '#fff', fontWeight: 'bold'},
   backIcon: {
-    // position: 'absolute',
-    top: 10,
-    left: 0,
     width: 30,
     height: 30,
-    alignSelf: 'flex-start',
   },
 });
 
